@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using VehiTrack.Models;
 
 namespace VehiTrack
@@ -10,13 +9,7 @@ namespace VehiTrack
 
         protected override void OnConfiguring(DbContextOptionsBuilder builder)
         {
-            var config = new ConfigurationBuilder()
-                .AddJsonFile($"appsettings.json", true, true)
-                .Build();
-
-            var connectionString = config["ConnectionString"];
-
-            builder.UseNpgsql(connectionString);
+            builder.UseNpgsql(AppSettings.ConnectionString);
         }
 
         protected override void OnModelCreating(ModelBuilder builder)
