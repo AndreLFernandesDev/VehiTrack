@@ -71,7 +71,7 @@ namespace VehiTrack
                 .HasForeignKey(r => r.VehicleId);
 
             /***************************************************************
-            * TABLE: refueling_record
+            * TABLE: refueling_records
             ***************************************************************/
 
             builder.Entity<RefuelingRecord>().ToTable("refueling_records");
