@@ -5,5 +5,6 @@ namespace VehiTrack.Models
         public int Id { get; set; }
         public required string Name { get; set; }
         public required string Email { get; set; }
+        public virtual ICollection<Vehicle> Vehicles { get; set; } = [];
     }
 }
