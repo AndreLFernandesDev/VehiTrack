@@ -4,7 +4,11 @@
     {
         static async Task Main(string[] args)
         {
-            await using var ctx = new AppContext();
+            var bot = new TelegramBot();
+
+            await bot.StartAsync();
+
+            // await using var ctx = new AppContext();
 
             /************************************************************************
              * Insert User
