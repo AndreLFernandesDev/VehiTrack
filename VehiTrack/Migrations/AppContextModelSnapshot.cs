@@ -22,7 +22,7 @@ namespace VehiTrack.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("VehiTrack.FuelType", b =>
+            modelBuilder.Entity("VehiTrack.Models.FuelType", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -41,39 +41,12 @@ namespace VehiTrack.Migrations
                     b.ToTable("fuel_types", (string)null);
                 });
 
-            modelBuilder.Entity("VehiTrack.Models.User", b =>
+            modelBuilder.Entity("VehiTrack.Models.RefuelingRecord", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
                         .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("email");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("name");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Email")
-                        .IsUnique();
-
-                    b.ToTable("users", (string)null);
-                });
-
-            modelBuilder.Entity("VehiTrack.RefuelingRecord", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("refueling_records");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
@@ -115,10 +88,37 @@ namespace VehiTrack.Migrations
 
                     b.HasIndex("VehicleId");
 
-                    b.ToTable("refueling_record", (string)null);
+                    b.ToTable("refueling_records", (string)null);
                 });
 
-            modelBuilder.Entity("VehiTrack.Vehicle", b =>
+            modelBuilder.Entity("VehiTrack.Models.User", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("email");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("name");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.ToTable("users", (string)null);
+                });
+
+            modelBuilder.Entity("VehiTrack.Models.Vehicle", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -143,15 +143,15 @@ namespace VehiTrack.Migrations
                     b.ToTable("vehicles", (string)null);
                 });
 
-            modelBuilder.Entity("VehiTrack.RefuelingRecord", b =>
+            modelBuilder.Entity("VehiTrack.Models.RefuelingRecord", b =>
                 {
-                    b.HasOne("VehiTrack.FuelType", "FuelType")
+                    b.HasOne("VehiTrack.Models.FuelType", "FuelType")
                         .WithMany("RefuelingRecords")
                         .HasForeignKey("FuelTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("VehiTrack.Vehicle", "Vehicle")
+                    b.HasOne("VehiTrack.Models.Vehicle", "Vehicle")
                         .WithMany("RefuelingRecords")
                         .HasForeignKey("VehicleId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -162,7 +162,7 @@ namespace VehiTrack.Migrations
                     b.Navigation("Vehicle");
                 });
 
-            modelBuilder.Entity("VehiTrack.Vehicle", b =>
+            modelBuilder.Entity("VehiTrack.Models.Vehicle", b =>
                 {
                     b.HasOne("VehiTrack.Models.User", "User")
                         .WithMany("Vehicles")
@@ -173,7 +173,7 @@ namespace VehiTrack.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("VehiTrack.FuelType", b =>
+            modelBuilder.Entity("VehiTrack.Models.FuelType", b =>
                 {
                     b.Navigation("RefuelingRecords");
                 });
@@ -183,7 +183,7 @@ namespace VehiTrack.Migrations
                     b.Navigation("Vehicles");
                 });
 
-            modelBuilder.Entity("VehiTrack.Vehicle", b =>
+            modelBuilder.Entity("VehiTrack.Models.Vehicle", b =>
                 {
                     b.Navigation("RefuelingRecords");
                 });

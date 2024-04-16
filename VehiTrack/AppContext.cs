@@ -63,8 +63,7 @@ namespace VehiTrack
                 .HasColumnName("user_id")
                 .IsRequired();
 
-            // RELATIONSHIP: vehicle -> refueling_records
-
+            // RELATIONSHIP: vehicles -> refueling_records
             builder
                 .Entity<Vehicle>()
                 .HasMany(v => v.RefuelingRecords)
@@ -74,13 +73,14 @@ namespace VehiTrack
             /***************************************************************
             * TABLE: refueling_record
             ***************************************************************/
-            builder.Entity<RefuelingRecord>().ToTable("refueling_record");
+
+            builder.Entity<RefuelingRecord>().ToTable("refueling_records");
 
             // COLUMN: id
             builder
                 .Entity<RefuelingRecord>()
                 .Property(r => r.Id)
-                .HasColumnName("refueling_records")
+                .HasColumnName("id")
                 .UseIdentityColumn();
 
             // COLUMN: date
@@ -140,7 +140,7 @@ namespace VehiTrack
                 .IsRequired();
 
             /**************************************************************************************
-            * TABLE: fuel_type
+            * TABLE: fuel_types
             **************************************************************************************/
 
             builder.Entity<FuelType>().ToTable("fuel_types");
@@ -152,7 +152,6 @@ namespace VehiTrack
             builder.Entity<FuelType>().Property(u => u.Name).HasColumnName("name").IsRequired();
 
             // RELATIONSHIP: fuel_type -> refueling_records
-
             builder
                 .Entity<FuelType>()
                 .HasMany(f => f.RefuelingRecords)

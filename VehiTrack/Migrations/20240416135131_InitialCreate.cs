@@ -60,10 +60,10 @@ namespace VehiTrack.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "refueling_record",
+                name: "refueling_records",
                 columns: table => new
                 {
-                    refueling_records = table.Column<int>(type: "integer", nullable: false)
+                    id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     date = table.Column<DateOnly>(type: "date", nullable: false),
                     odometer = table.Column<int>(type: "integer", nullable: false),
@@ -76,15 +76,15 @@ namespace VehiTrack.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_refueling_record", x => x.refueling_records);
+                    table.PrimaryKey("PK_refueling_records", x => x.id);
                     table.ForeignKey(
-                        name: "FK_refueling_record_fuel_types_fuel_type_id",
+                        name: "FK_refueling_records_fuel_types_fuel_type_id",
                         column: x => x.fuel_type_id,
                         principalTable: "fuel_types",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_refueling_record_vehicles_vehicle_id",
+                        name: "FK_refueling_records_vehicles_vehicle_id",
                         column: x => x.vehicle_id,
                         principalTable: "vehicles",
                         principalColumn: "id",
@@ -92,13 +92,13 @@ namespace VehiTrack.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_refueling_record_fuel_type_id",
-                table: "refueling_record",
+                name: "IX_refueling_records_fuel_type_id",
+                table: "refueling_records",
                 column: "fuel_type_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_refueling_record_vehicle_id",
-                table: "refueling_record",
+                name: "IX_refueling_records_vehicle_id",
+                table: "refueling_records",
                 column: "vehicle_id");
 
             migrationBuilder.CreateIndex(
@@ -117,7 +117,7 @@ namespace VehiTrack.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "refueling_record");
+                name: "refueling_records");
 
             migrationBuilder.DropTable(
                 name: "fuel_types");
