@@ -1,25 +1,20 @@
-﻿namespace VehiTrack
+﻿using VehiTrack.Models;
+using VehiTrack.Services;
+
+namespace VehiTrack
 {
     public class Program
     {
         static async Task Main(string[] args)
         {
-            var bot = new TelegramBot();
-
-            await bot.StartAsync();
-
-            // await using var ctx = new AppContext();
+            var userService = new UserService();
 
             /************************************************************************
              * Insert User
              ************************************************************************/
 
             // var user = new User() { Name = "Maycon Sousa", Email = "mayconfsousa@gmail.com" };
-            // var user = new User() { Name = "André Fernandes", Email = "dedeluiz3040@gmail.com" };
-
-            // ctx.Users.Add(user);
-
-            // await ctx.SaveChangesAsync();
+            // user = await userService.CreateUserAsync(user);
 
             // Console.WriteLine($"Created user: [{user.Id}] {user.Email}");
 
@@ -27,9 +22,7 @@
              * Get User by Email
              ************************************************************************/
 
-            // var user = await ctx
-            //     .Users.Where(u => u.Email == "mayconfsousa@gmail.com")
-            //     .FirstOrDefaultAsync();
+            // var user = await userService.GetUserByEmailAsync("mayconfsousa@gmail.com");
 
             // if (user != null)
             // {
@@ -44,15 +37,13 @@
              * Update User
              ************************************************************************/
 
-            // var user = await ctx
-            //     .Users.Where(u => u.Email == "mayconfsousa@gmail.com")
-            //     .FirstOrDefaultAsync();
+            // var user = await userService.GetUserByEmailAsync("mayconfsousa@gmail.com");
 
             // if (user != null)
             // {
             //     user.Name = "Maycon Sousa 2";
 
-            //     await ctx.SaveChangesAsync();
+            //     user = await userService.UpdateUserAsync(user);
 
             //     Console.WriteLine($"User updated: [{user.Id}] {user.Email}");
             // }
@@ -65,12 +56,12 @@
              * Get All Users
              ************************************************************************/
 
-            // var users = await ctx.Users.ToListAsync();
+            var users = await userService.GetUsersAsync();
 
-            // foreach (var user in users)
-            // {
-            //     Console.WriteLine($"User: [{user.Id}] {user.Email}");
-            // }
+            foreach (var user in users)
+            {
+                Console.WriteLine($"User: [{user.Id}] {user.Email}");
+            }
         }
     }
 }
