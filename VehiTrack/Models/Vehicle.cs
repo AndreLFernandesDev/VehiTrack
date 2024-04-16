@@ -1,6 +1,4 @@
-using VehiTrack.Models;
-
-namespace VehiTrack
+namespace VehiTrack.Models
 {
     public class Vehicle
     {
