@@ -30,7 +30,7 @@ namespace VehiTrack
             builder.Entity<User>().Property(u => u.Email).HasColumnName("email").IsRequired();
             builder.Entity<User>().HasIndex(u => u.Email).IsUnique();
 
-            // RELATIONSHIP: user -> vehicles
+            // RELATIONSHIP: vehicles -> users
             builder
                 .Entity<User>()
                 .HasMany(u => u.Vehicles)
@@ -56,7 +56,7 @@ namespace VehiTrack
                 .HasColumnName("user_id")
                 .IsRequired();
 
-            // RELATIONSHIP: vehicles -> refueling_records
+            // RELATIONSHIP: refueling_records -> vehicles
             builder
                 .Entity<Vehicle>()
                 .HasMany(v => v.RefuelingRecords)
@@ -144,7 +144,7 @@ namespace VehiTrack
             // COLUMN: name
             builder.Entity<FuelType>().Property(u => u.Name).HasColumnName("name").IsRequired();
 
-            // RELATIONSHIP: fuel_type -> refueling_records
+            // RELATIONSHIP: refueling_records -> fuel_types
             builder
                 .Entity<FuelType>()
                 .HasMany(f => f.RefuelingRecords)
