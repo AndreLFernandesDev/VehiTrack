@@ -38,9 +38,9 @@ namespace VehiTrack.Services
             return users;
         }
 
-        public async Task<User?> GetUserByEmailAsync(string email)
+        public async Task<User?> GetUserByTelegramIdAsync(long telegramId)
         {
-            var user = await _userRepository.GetUserByEmailAsync(email);
+            var user = await _userRepository.GetUserByTelegramIdAsync(telegramId);
 
             return user;
         }

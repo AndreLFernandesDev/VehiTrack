@@ -23,12 +23,35 @@ namespace VehiTrack
             // COLUMN: id
             builder.Entity<User>().Property(u => u.Id).HasColumnName("id").UseIdentityColumn();
 
-            // COLUMN: name
-            builder.Entity<User>().Property(u => u.Name).HasColumnName("name").IsRequired();
+            // COLUMN: first_name
+            builder
+                .Entity<User>()
+                .Property(u => u.FirstName)
+                .HasColumnName("first_name")
+                .IsRequired();
 
-            // COLUMN: email
-            builder.Entity<User>().Property(u => u.Email).HasColumnName("email").IsRequired();
-            builder.Entity<User>().HasIndex(u => u.Email).IsUnique();
+            // COLUMN: last_name
+            builder
+                .Entity<User>()
+                .Property(u => u.LastName)
+                .HasColumnName("last_name")
+                .IsRequired();
+
+            // COLUMN: username
+            builder
+                .Entity<User>()
+                .Property(u => u.Username)
+                .HasColumnName("username")
+                .IsRequired();
+            builder.Entity<User>().HasIndex(u => u.Username).IsUnique();
+
+            // COLUMN: telegram_id
+            builder
+                .Entity<User>()
+                .Property(u => u.TelegramId)
+                .HasColumnName("telegram_id")
+                .IsRequired();
+            builder.Entity<User>().HasIndex(u => u.TelegramId).IsUnique();
 
             // RELATIONSHIP: vehicles -> users
             builder

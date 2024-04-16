@@ -2,16 +2,19 @@ using Telegram.Bot;
 using Telegram.Bot.Exceptions;
 using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
+using VehiTrack.Services;
 
 namespace VehiTrack
 {
     public class TelegramBot
     {
         private readonly TelegramBotClient _client;
+        private readonly UserService _userService;
 
         public TelegramBot()
         {
             _client = new TelegramBotClient(AppSettings.TelegramBotToken);
+            _userService = new UserService();
         }
 
         public async Task StartAsync()
@@ -49,6 +52,12 @@ namespace VehiTrack
             if (message.Text is not { } messageText)
                 return;
 
+            // Only process real users
+            if (message.From is null || message.From.IsBot)
+                return;
+
+            await CreateUserIfNotExistsAsync(message.From);
+
             var chatId = message.Chat.Id;
 
             Console.WriteLine($"Received a '{messageText}' message in chat {chatId}.");
@@ -75,6 +84,27 @@ namespace VehiTrack
             Console.WriteLine(errorMessage);
 
             return Task.CompletedTask;
+        }
+
+        private async Task CreateUserIfNotExistsAsync(User telegramUser)
+        {
+            if (telegramUser is null)
+                return;
+
+            var user = await _userService.GetUserByTelegramIdAsync(telegramUser.Id);
+
+            if (user is not null)
+                return;
+
+            user = new Models.User()
+            {
+                FirstName = telegramUser.FirstName,
+                LastName = telegramUser.LastName,
+                Username = telegramUser.Username,
+                TelegramId = telegramUser.Id
+            };
+
+            await _userService.CreateUserAsync(user);
         }
     }
 }
