@@ -26,12 +26,35 @@ namespace VehiTrack
             // COLUMN: id
             builder.Entity<User>().Property(u => u.Id).HasColumnName("id").UseIdentityColumn();
 
-            // COLUMN: name
-            builder.Entity<User>().Property(u => u.Name).HasColumnName("name").IsRequired();
+            // COLUMN: first_name
+            builder
+                .Entity<User>()
+                .Property(u => u.FirstName)
+                .HasColumnName("first_name")
+                .IsRequired();
 
-            // COLUMN: email
-            builder.Entity<User>().Property(u => u.Email).HasColumnName("email").IsRequired();
-            builder.Entity<User>().HasIndex(u => u.Email).IsUnique();
+            // COLUMN: last_name
+            builder
+                .Entity<User>()
+                .Property(u => u.LastName)
+                .HasColumnName("last_name")
+                .IsRequired();
+
+            // COLUMN: username
+            builder
+                .Entity<User>()
+                .Property(u => u.Username)
+                .HasColumnName("username")
+                .IsRequired();
+            builder.Entity<User>().HasIndex(u => u.Username).IsUnique();
+
+            // COLUMN: telegram_id
+            builder
+                .Entity<User>()
+                .Property(u => u.TelegramId)
+                .HasColumnName("telegram_id")
+                .IsRequired();
+            builder.Entity<User>().HasIndex(u => u.TelegramId).IsUnique();
 
             // RELATIONSHIP: vehicles -> users
             builder
@@ -41,8 +64,8 @@ namespace VehiTrack
                 .HasForeignKey(v => v.UserId);
 
             /**************************************************************
-            * TABLE: vehicles
-            **************************************************************/
+             * TABLE: vehicles
+             **************************************************************/
 
             builder.Entity<Vehicle>().ToTable("vehicles");
 
@@ -67,8 +90,8 @@ namespace VehiTrack
                 .HasForeignKey(r => r.VehicleId);
 
             /***************************************************************
-            * TABLE: refueling_records
-            ***************************************************************/
+             * TABLE: refueling_records
+             ***************************************************************/
 
             builder.Entity<RefuelingRecord>().ToTable("refueling_records");
 
@@ -136,16 +159,16 @@ namespace VehiTrack
                 .IsRequired();
 
             /**************************************************************************************
-            * TABLE: fuel_types
-            **************************************************************************************/
+             * TABLE: fuel_types
+             **************************************************************************************/
 
             builder.Entity<FuelType>().ToTable("fuel_types");
 
             // COLUMN: id
-            builder.Entity<FuelType>().Property(u => u.Id).HasColumnName("id").UseIdentityColumn();
+            builder.Entity<FuelType>().Property(f => f.Id).HasColumnName("id").UseIdentityColumn();
 
             // COLUMN: name
-            builder.Entity<FuelType>().Property(u => u.Name).HasColumnName("name").IsRequired();
+            builder.Entity<FuelType>().Property(f => f.Name).HasColumnName("name").IsRequired();
 
             // RELATIONSHIP: refueling_records -> fuel_types
             builder
