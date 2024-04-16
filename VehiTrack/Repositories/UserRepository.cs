@@ -44,6 +44,13 @@ namespace VehiTrack.Repositories
             return users;
         }
 
+        public async Task<User?> GetUserByIdAsync(int id)
+        {
+            var user = await _ctx.Users.FindAsync(id);
+
+            return user;
+        }
+
         public async Task<User?> GetUserByTelegramIdAsync(long telegramId)
         {
             var user = await _ctx
