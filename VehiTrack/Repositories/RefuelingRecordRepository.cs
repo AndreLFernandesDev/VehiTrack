@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using VehiTrack.Models;
 
-namespace VehiTrack.Services
+namespace VehiTrack.Repositories
 {
     public class RefuelingRecordsRepository
     {
@@ -36,10 +36,16 @@ namespace VehiTrack.Services
             await _ctx.SaveChangesAsync();
         }
 
-        public async Task<ICollection<RefuelingRecord>> GetRefuelingRecords()
+        public async Task<ICollection<RefuelingRecord>> GetRefuelingRecordsAsync()
         {
             var refuelingRecords = await _ctx.RefuelingRecords.ToListAsync();
             return refuelingRecords;
+        }
+
+        public async Task<RefuelingRecord?> GetRefuelingRecordByIdAsync(int id)
+        {
+            var refuelingRecord = await _ctx.RefuelingRecords.FindAsync(id);
+            return refuelingRecord;
         }
     }
 }
