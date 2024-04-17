@@ -14,8 +14,8 @@ namespace VehiTrack.Services
 
         public async Task<Vehicle> CreateVehicleAsync(Vehicle vehicle)
         {
-            var createVheicle = await _vehicleRepository.CreateVehicleAsync(vehicle);
-            return createVheicle;
+            var createVehicle = await _vehicleRepository.CreateVehicleAsync(vehicle);
+            return createVehicle;
         }
 
         public async Task<Vehicle> UpdateVehicleAsync(Vehicle vehicle)
@@ -31,8 +31,8 @@ namespace VehiTrack.Services
 
         public async Task<ICollection<Vehicle>> GetVehiclesAsync()
         {
-            var vheicles = await _vehicleRepository.GetVehiclesAsync();
-            return vheicles;
+            var vehicles = await _vehicleRepository.GetVehiclesAsync();
+            return vehicles;
         }
 
         public async Task<Vehicle?> GetVeicleByIdAsync(int id)
