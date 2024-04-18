@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using VehiTrack;
@@ -11,9 +12,11 @@ using VehiTrack;
 namespace VehiTrack.Migrations
 {
     [DbContext(typeof(AppContext))]
-    partial class AppContextModelSnapshot : ModelSnapshot
+    [Migration("20240418145335_AlteracoesGeraisNoBancoDeDados")]
+    partial class AlteracoesGeraisNoBancoDeDados
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -71,10 +74,8 @@ namespace VehiTrack.Migrations
                         .HasColumnName("quantity");
 
                     b.Property<double>("TotalCost")
-                        .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("double precision")
-                        .HasColumnName("total_cost")
-                        .HasComputedColumnSql("quantity * unity_price", true);
+                        .HasColumnName("total_cost");
 
                     b.Property<double>("UnitPrice")
                         .HasColumnType("double precision")

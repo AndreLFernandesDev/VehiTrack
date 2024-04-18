@@ -75,6 +75,8 @@ namespace VehiTrack
             // COLUMN: name
             builder.Entity<Vehicle>().Property(v => v.Name).HasColumnName("name").IsRequired();
 
+            builder.Entity<Vehicle>().HasIndex(v => new { v.UserId, v.Name }).IsUnique();
+
             // COLUMN: user_id
             builder
                 .Entity<Vehicle>()
@@ -109,11 +111,11 @@ namespace VehiTrack
                 .HasColumnName("date")
                 .IsRequired();
 
-            // COLUMN: odometer
+            // COLUMN: odometer_counter
             builder
                 .Entity<RefuelingRecord>()
-                .Property(r => r.Odometer)
-                .HasColumnName("odometer")
+                .Property(r => r.OdometerCounter)
+                .HasColumnName("odometer_counter")
                 .IsRequired();
 
             // COLUMN: is_full
@@ -123,25 +125,26 @@ namespace VehiTrack
                 .HasColumnName("is_full")
                 .IsRequired();
 
-            // CULUMN: amount
+            // CULUMN: quantity
             builder
                 .Entity<RefuelingRecord>()
-                .Property(r => r.Amount)
-                .HasColumnName("amount")
+                .Property(r => r.Quantity)
+                .HasColumnName("quantity")
                 .IsRequired();
 
-            // COLUMN: price
+            // COLUMN: unity_price
             builder
                 .Entity<RefuelingRecord>()
-                .Property(r => r.Price)
-                .HasColumnName("price")
+                .Property(r => r.UnitPrice)
+                .HasColumnName("unity_price")
                 .IsRequired();
 
-            // COLUMN: total_price
+            // COLUMN: total_cost
             builder
                 .Entity<RefuelingRecord>()
-                .Property(r => r.TotalPrice)
-                .HasColumnName("total_price")
+                .Property(r => r.TotalCost)
+                .HasColumnName("total_cost")
+                .HasComputedColumnSql("quantity * unity_price", true)
                 .IsRequired();
 
             // COLUMN: fuel_type_id
