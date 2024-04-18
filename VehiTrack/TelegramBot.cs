@@ -231,7 +231,7 @@ namespace VehiTrack
                 stringBuilder.AppendLine("Veículos cadastrados:");
                 stringBuilder.AppendLine();
 
-                foreach (var vehicle in ctx.User.Vehicles)
+                foreach (var vehicle in ctx.User.Vehicles.OrderBy(v => v.Name))
                 {
                     stringBuilder.AppendLine($"🚗 {vehicle.Name}");
                 }
