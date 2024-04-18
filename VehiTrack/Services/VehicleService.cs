@@ -3,36 +3,43 @@ using VehiTrack.Repositories;
 
 namespace VehiTrack.Services
 {
-    public class VheicleServices
+    public class VehicleService
     {
-        private readonly VehicleRepository _vheicleRepository;
+        private readonly VehicleRepository _vehicleRepository;
 
-        public VheicleServices()
+        public VehicleService()
         {
-            _vheicleRepository = new VehicleRepository();
+            _vehicleRepository = new VehicleRepository();
         }
 
         public async Task<Vehicle> CreateVehicleAsync(Vehicle vehicle)
         {
-            var createVheicle = await _vheicleRepository.CreateVehicleAsync(vehicle);
-            return createVheicle;
+            var createVehicle = await _vehicleRepository.CreateVehicleAsync(vehicle);
+            return createVehicle;
         }
 
         public async Task<Vehicle> UpdateVehicleAsync(Vehicle vehicle)
         {
-            var updateVehicle = await _vheicleRepository.UpdateVehicleAsync(vehicle);
+            var updateVehicle = await _vehicleRepository.UpdateVehicleAsync(vehicle);
             return updateVehicle;
         }
 
         public async Task DeleteVehicleAsync(Vehicle vehicle)
         {
-            await _vheicleRepository.DeleteVehicleAsync(vehicle);
+            await _vehicleRepository.DeleteVehicleAsync(vehicle);
         }
 
         public async Task<ICollection<Vehicle>> GetVehiclesAsync()
         {
-            var vheicles = await _vheicleRepository.GetVehiclesAsync();
-            return vheicles;
+            var vehicles = await _vehicleRepository.GetVehiclesAsync();
+            return vehicles;
+        }
+
+        public async Task<Vehicle?> GetVeicleByIdAsync(int id)
+        {
+            var vehicle = await _vehicleRepository.GetVehicleByIdAsync(id);
+
+            return vehicle;
         }
     }
 }

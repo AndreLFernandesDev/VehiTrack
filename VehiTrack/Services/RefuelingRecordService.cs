@@ -1,4 +1,3 @@
-using System.ComponentModel;
 using VehiTrack.Models;
 using VehiTrack.Repositories;
 
@@ -39,8 +38,14 @@ namespace VehiTrack.Services
 
         public async Task<ICollection<RefuelingRecord>> GetRefuelingRecords()
         {
-            var refuelingRecords = await _refuelingRecordsRepository.GetRefuelingRecords();
+            var refuelingRecords = await _refuelingRecordsRepository.GetRefuelingRecordsAsync();
             return refuelingRecords;
+        }
+
+        public async Task<RefuelingRecord?> GetRefuelingRecordByIdAsync(int id)
+        {
+            var refuelingRecord = await _refuelingRecordsRepository.GetRefuelingRecordByIdAsync(id);
+            return refuelingRecord;
         }
     }
 }

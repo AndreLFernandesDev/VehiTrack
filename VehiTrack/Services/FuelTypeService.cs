@@ -34,5 +34,11 @@ namespace VehiTrack.Services
             var fuelTypes = await _fuelTypeRepository.GetFuelTypesAsync();
             return fuelTypes;
         }
+
+        public async Task<FuelType?> GetFuelTypeByIdAsync(int id)
+        {
+            var fuelType = await _fuelTypeRepository.GetFuelTypeByIdAsync(id);
+            return fuelType;
+        }
     }
 }

@@ -37,5 +37,11 @@ namespace VehiTrack.Repositories
             var vheicles = await _ctx.Vehicles.ToListAsync();
             return vheicles;
         }
+
+        public async Task<Vehicle?> GetVehicleByIdAsync(int id)
+        {
+            var vehicle = await _ctx.Vehicles.FindAsync(id);
+            return vehicle;
+        }
     }
 }
