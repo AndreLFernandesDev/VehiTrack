@@ -4,8 +4,8 @@ namespace VehiTrack.Models
     {
         public int Id { get; set; }
         public required string Name { get; set; }
-        public int UserId { get; set; }
-        public virtual required User User { get; set; }
-        public virtual required ICollection<RefuelingRecord> RefuelingRecords { get; set; }
+        public required int UserId { get; set; }
+        public virtual User User { get; set; } = null!;
+        public virtual ICollection<RefuelingRecord> RefuelingRecords { get; set; } = [];
     }
 }

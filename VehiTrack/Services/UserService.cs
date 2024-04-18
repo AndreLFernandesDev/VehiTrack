@@ -15,14 +15,12 @@ namespace VehiTrack.Services
         public async Task<User> CreateUserAsync(User user)
         {
             var createdUser = await _userRepository.CreateUserAsync(user);
-
             return createdUser;
         }
 
         public async Task<User> UpdateUserAsync(User user)
         {
             var updatedUser = await _userRepository.UpdateUserAsync(user);
-
             return updatedUser;
         }
 
@@ -34,14 +32,18 @@ namespace VehiTrack.Services
         public async Task<ICollection<User>> GetUsersAsync()
         {
             var users = await _userRepository.GetUsersAsync();
-
             return users;
+        }
+
+        public async Task<User?> GetUserByIdAsync(int id)
+        {
+            var user = await _userRepository.GetUserByIdAsync(id);
+            return user;
         }
 
         public async Task<User?> GetUserByTelegramIdAsync(long telegramId)
         {
             var user = await _userRepository.GetUserByTelegramIdAsync(telegramId);
-
             return user;
         }
     }

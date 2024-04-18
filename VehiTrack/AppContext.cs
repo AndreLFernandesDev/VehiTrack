@@ -6,6 +6,9 @@ namespace VehiTrack
     public class AppContext : DbContext
     {
         public DbSet<User> Users { get; set; }
+        public DbSet<Vehicle> Vehicles { get; set; }
+        public DbSet<RefuelingRecord> RefuelingRecords { get; set; }
+        public DbSet<FuelType> FuelTypes { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder builder)
         {
