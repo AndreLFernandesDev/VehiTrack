@@ -14,14 +14,14 @@ namespace VehiTrack.Services
 
         public async Task<FuelType> CreateFuelTypeAsync(FuelType fuelType)
         {
-            var createFuelType = await _fuelTypeRepository.CreateFuelTypeAsync(fuelType);
-            return createFuelType;
+            var createdFuelType = await _fuelTypeRepository.CreateFuelTypeAsync(fuelType);
+            return createdFuelType;
         }
 
         public async Task<FuelType> UpdateFuelTypeAsync(FuelType fuelType)
         {
-            var updateFuelType = await _fuelTypeRepository.UpdateFuelTypeAsync(fuelType);
-            return updateFuelType;
+            var updatedFuelType = await _fuelTypeRepository.UpdateFuelTypeAsync(fuelType);
+            return updatedFuelType;
         }
 
         public async Task DeleteFuelTypeAsync(FuelType fuelType)

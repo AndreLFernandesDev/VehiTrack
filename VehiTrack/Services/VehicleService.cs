@@ -14,14 +14,14 @@ namespace VehiTrack.Services
 
         public async Task<Vehicle> CreateVehicleAsync(Vehicle vehicle)
         {
-            var createVehicle = await _vehicleRepository.CreateVehicleAsync(vehicle);
-            return createVehicle;
+            var createdVehicle = await _vehicleRepository.CreateVehicleAsync(vehicle);
+            return createdVehicle;
         }
 
         public async Task<Vehicle> UpdateVehicleAsync(Vehicle vehicle)
         {
-            var updateVehicle = await _vehicleRepository.UpdateVehicleAsync(vehicle);
-            return updateVehicle;
+            var updatedVehicle = await _vehicleRepository.UpdateVehicleAsync(vehicle);
+            return updatedVehicle;
         }
 
         public async Task DeleteVehicleAsync(Vehicle vehicle)

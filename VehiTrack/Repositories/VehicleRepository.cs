@@ -34,8 +34,8 @@ namespace VehiTrack.Repositories
 
         public async Task<ICollection<Vehicle>> GetVehiclesAsync()
         {
-            var vheicles = await _ctx.Vehicles.ToListAsync();
-            return vheicles;
+            var vehicles = await _ctx.Vehicles.ToListAsync();
+            return vehicles;
         }
 
         public async Task<Vehicle?> GetVehicleByIdAsync(int id)

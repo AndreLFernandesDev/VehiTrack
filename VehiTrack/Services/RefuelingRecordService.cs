@@ -16,19 +16,18 @@ namespace VehiTrack.Services
             RefuelingRecord refuelingRecord
         )
         {
-            var createUser = await _refuelingRecordsRepository.CreateRefuelingRecordAsync(
-                refuelingRecord
-            );
-            return createUser;
+            var createdRefuelingRecord =
+                await _refuelingRecordsRepository.CreateRefuelingRecordAsync(refuelingRecord);
+            return createdRefuelingRecord;
         }
 
         public async Task<RefuelingRecord> UpdateRefuelingRecordAsync(
             RefuelingRecord refuelingRecord
         )
         {
-            var updateRefuelingRecord =
+            var updatedRefuelingRecord =
                 await _refuelingRecordsRepository.UpdateRefuelingRecordAsync(refuelingRecord);
-            return updateRefuelingRecord;
+            return updatedRefuelingRecord;
         }
 
         public async Task DeleteRefuelingRecordAsync(RefuelingRecord refuelingRecord)
