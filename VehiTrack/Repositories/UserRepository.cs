@@ -40,15 +40,17 @@ namespace VehiTrack.Repositories
 
         public async Task<User?> GetUserByIdAsync(int id)
         {
-            var user = await _ctx.Users.FindAsync(id);
+            var user = await _ctx
+                .Users.Include(u => u.Vehicles)
+                .FirstOrDefaultAsync(u => u.Id == id);
             return user;
         }
 
         public async Task<User?> GetUserByTelegramIdAsync(long telegramId)
         {
             var user = await _ctx
-                .Users.Where(u => u.TelegramId == telegramId)
-                .FirstOrDefaultAsync();
+                .Users.Include(u => u.Vehicles)
+                .FirstOrDefaultAsync(u => u.TelegramId == telegramId);
             return user;
         }
     }
