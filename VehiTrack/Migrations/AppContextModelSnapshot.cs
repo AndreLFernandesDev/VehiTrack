@@ -50,9 +50,9 @@ namespace VehiTrack.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("DateTime")
+                    b.Property<DateTime>("Date")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("date_time");
+                        .HasColumnName("date");
 
                     b.Property<int>("FuelTypeId")
                         .HasColumnType("integer")

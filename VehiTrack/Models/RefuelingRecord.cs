@@ -3,7 +3,7 @@ namespace VehiTrack.Models
     public class RefuelingRecord
     {
         public int Id { get; set; }
-        public required DateTime DateTime { get; set; }
+        public required DateTime Date { get; set; }
         public required int OdometerCounter { get; set; }
         public required bool IsFull { get; set; }
         public required double Quantity { get; set; }

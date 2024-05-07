@@ -54,7 +54,7 @@ namespace VehiTrack.Repositories
         {
             var refuelingRecords = await _ctx
                 .RefuelingRecords.Where(v => v.VehicleId == vehicleId)
-                .OrderBy(r => r.DateTime)
+                .OrderBy(r => r.Date)
                 .ToListAsync();
             return refuelingRecords;
         }

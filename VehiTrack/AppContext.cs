@@ -104,11 +104,11 @@ namespace VehiTrack
                 .HasColumnName("id")
                 .UseIdentityColumn();
 
-            // COLUMN: date_time
+            // COLUMN: date
             builder
                 .Entity<RefuelingRecord>()
-                .Property(r => r.DateTime)
-                .HasColumnName("date_time")
+                .Property(r => r.Date)
+                .HasColumnName("date")
                 .IsRequired();
 
             // COLUMN: odometer_counter

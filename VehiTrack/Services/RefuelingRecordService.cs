@@ -4,11 +4,11 @@ using VehiTrack.Repositories;
 
 namespace VehiTrack.Services
 {
-    public class RefuelingRecordsService
+    public class RefuelingRecordService
     {
         private readonly RefuelingRecordsRepository _refuelingRecordsRepository;
 
-        public RefuelingRecordsService()
+        public RefuelingRecordService()
         {
             _refuelingRecordsRepository = new RefuelingRecordsRepository();
         }
@@ -48,11 +48,13 @@ namespace VehiTrack.Services
             return refuelingRecord;
         }
 
-        public async Task<List<RefuelingRecordExtend>> CalculateConsumptionAsync(int id)
+        public async Task<List<RefuelingRecordExtended>> GetExtendedRefuelingRecordsByVehicleId(
+            int vehicleId
+        )
         {
             var refuelingRecords =
-                await _refuelingRecordsRepository.GetRefuelingRecordsByVehicleIdAsync(id);
-            List<RefuelingRecordExtend> refuelingRecordExtends = new();
+                await _refuelingRecordsRepository.GetRefuelingRecordsByVehicleIdAsync(vehicleId);
+            List<RefuelingRecordExtended> extendedRefuelingRecords = new();
             if (refuelingRecords.Count > 1)
             {
                 for (int i = 0; i < refuelingRecords.Count - 1; i++)
@@ -88,11 +90,11 @@ namespace VehiTrack.Services
                         );
                     }
 
-                    RefuelingRecordExtend refuelingRecordExtend =
+                    RefuelingRecordExtended refuelingRecordExtended =
                         new()
                         {
                             Id = refuelingRecord.Id,
-                            DateTime = refuelingRecord.DateTime,
+                            Date = refuelingRecord.Date,
                             OdometerCounter = refuelingRecord.OdometerCounter,
                             IsFull = refuelingRecord.IsFull,
                             Quantity = refuelingRecord.Quantity,
@@ -103,14 +105,14 @@ namespace VehiTrack.Services
                             Vehicle = refuelingRecord.Vehicle,
                             Consumption = consumption
                         };
-                    refuelingRecordExtends.Add(refuelingRecordExtend);
+                    extendedRefuelingRecords.Add(refuelingRecordExtended);
                 }
             }
-            return refuelingRecordExtends;
+            return extendedRefuelingRecords;
         }
     }
 
-    public class RefuelingRecordExtend : RefuelingRecord
+    public class RefuelingRecordExtended : RefuelingRecord
     {
         public double Consumption { get; set; }
     }

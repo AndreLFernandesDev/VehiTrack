@@ -9,8 +9,8 @@ namespace VehiTrack
         {
             // var bot = new TelegramBot();
             // await bot.StartAsync();
-            var services = new RefuelingRecordsService();
-            var lista = await services.CalculateConsumptionAsync(1);
+            var services = new RefuelingRecordService();
+            var lista = await services.GetExtendedRefuelingRecordsByVehicleId(1);
             for (var item = 0; item < lista.Count; item++)
             {
                 Console.WriteLine("{0} {1}", lista[item].Id, lista[item].Consumption);
