@@ -57,37 +57,44 @@ namespace VehiTrack.Services
             List<RefuelingRecordExtended> extendedRefuelingRecords = new();
             if (refuelingRecords.Count > 1)
             {
-                for (int i = 0; i < refuelingRecords.Count - 1; i++)
+                for (int i = 0; i <= refuelingRecords.Count - 1; i++)
                 {
-                    RefuelingRecord refuelingRecord = null!;
-                    RefuelingRecord refuelingRecordPrevius = null!;
-                    double previousOdometer = 0;
-                    double currentOdometer = 0;
-                    double quantityOfLiters = 0;
-                    if (i >= 1)
+                    Console.WriteLine(i);
+                    RefuelingRecord refuelingRecord;
+                    RefuelingRecord refuelingRecordNext;
+                    double nextOdometer;
+                    double previousOdometer;
+                    double quantityOfLiters;
+                    refuelingRecord = refuelingRecords.ElementAt(i);
+                    if (i == refuelingRecords.Count - 1)
                     {
-                        refuelingRecord = refuelingRecords.ElementAt(i);
-                        refuelingRecordPrevius = refuelingRecords.ElementAt(i - 1);
-                        previousOdometer = refuelingRecordPrevius.OdometerCounter;
-                        currentOdometer = refuelingRecord.OdometerCounter;
-                        quantityOfLiters = refuelingRecord.Quantity;
+                        break;
                     }
-                    else if (i == 0)
+                    else
                     {
-                        refuelingRecord = refuelingRecords.ElementAt(i);
-                        refuelingRecordPrevius = refuelingRecords.ElementAt(i);
-                        previousOdometer = refuelingRecordPrevius.OdometerCounter;
-                        currentOdometer = refuelingRecord.OdometerCounter;
-                        quantityOfLiters = refuelingRecord.Quantity;
+                        refuelingRecordNext = refuelingRecords.ElementAt(i + 1);
+                        nextOdometer = refuelingRecordNext.OdometerCounter;
+                        previousOdometer = refuelingRecord.OdometerCounter;
+                        quantityOfLiters = refuelingRecordNext.Quantity;
                     }
 
                     double consumption = 0;
-                    if (refuelingRecord.IsFull == true && refuelingRecordPrevius.IsFull == true)
+                    if (refuelingRecord.IsFull == true && refuelingRecordNext.IsFull == true)
                     {
-                        consumption = Math.Round(
-                            (currentOdometer - previousOdometer) / quantityOfLiters,
-                            2
-                        );
+                        if (previousOdometer > nextOdometer)
+                        {
+                            consumption = Math.Round(
+                                (99999 - previousOdometer + nextOdometer) / quantityOfLiters,
+                                2
+                            );
+                        }
+                        else
+                        {
+                            consumption = Math.Round(
+                                (nextOdometer - previousOdometer) / quantityOfLiters,
+                                2
+                            );
+                        }
                     }
 
                     RefuelingRecordExtended refuelingRecordExtended =
