@@ -62,7 +62,7 @@ namespace VehiTrack.Services
                     Console.WriteLine(i);
                     RefuelingRecord refuelingRecord;
                     RefuelingRecord refuelingRecordNext;
-                    double nextOdometer;
+                    double currentOdometer;
                     double previousOdometer;
                     double quantityOfLiters;
                     refuelingRecord = refuelingRecords.ElementAt(i);
@@ -73,7 +73,7 @@ namespace VehiTrack.Services
                     else
                     {
                         refuelingRecordNext = refuelingRecords.ElementAt(i + 1);
-                        nextOdometer = refuelingRecordNext.OdometerCounter;
+                        currentOdometer = refuelingRecordNext.OdometerCounter;
                         previousOdometer = refuelingRecord.OdometerCounter;
                         quantityOfLiters = refuelingRecordNext.Quantity;
                     }
@@ -81,17 +81,29 @@ namespace VehiTrack.Services
                     double consumption = 0;
                     if (refuelingRecord.IsFull == true && refuelingRecordNext.IsFull == true)
                     {
-                        if (previousOdometer > nextOdometer)
+                        if (previousOdometer > currentOdometer)
                         {
+                            double maximumOdometer;
+                            if (previousOdometer > 99999)
+                            {
+                                maximumOdometer = 999999;
+                            }
+                            else
+                            {
+                                maximumOdometer = 99999;
+                            }
+                            Console.WriteLine("a");
                             consumption = Math.Round(
-                                (99999 - previousOdometer + nextOdometer) / quantityOfLiters,
+                                (maximumOdometer - previousOdometer + currentOdometer)
+                                    / quantityOfLiters,
                                 2
                             );
                         }
                         else
                         {
+                            Console.WriteLine("c");
                             consumption = Math.Round(
-                                (nextOdometer - previousOdometer) / quantityOfLiters,
+                                (currentOdometer - previousOdometer) / quantityOfLiters,
                                 2
                             );
                         }
