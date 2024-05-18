@@ -59,7 +59,6 @@ namespace VehiTrack.Services
             {
                 for (int i = 0; i <= refuelingRecords.Count - 1; i++)
                 {
-                    Console.WriteLine(i);
                     RefuelingRecord refuelingRecord;
                     RefuelingRecord refuelingRecordNext;
                     double currentOdometer;
@@ -92,7 +91,6 @@ namespace VehiTrack.Services
                             {
                                 maximumOdometer = 99999;
                             }
-                            Console.WriteLine("a");
                             consumption = Math.Round(
                                 (maximumOdometer - previousOdometer + currentOdometer)
                                     / quantityOfLiters,
@@ -101,7 +99,6 @@ namespace VehiTrack.Services
                         }
                         else
                         {
-                            Console.WriteLine("c");
                             consumption = Math.Round(
                                 (currentOdometer - previousOdometer) / quantityOfLiters,
                                 2
