@@ -34,18 +34,10 @@ namespace VehiTrack
                 .IsRequired();
 
             // COLUMN: last_name
-            builder
-                .Entity<User>()
-                .Property(u => u.LastName)
-                .HasColumnName("last_name")
-                .IsRequired();
+            builder.Entity<User>().Property(u => u.LastName).HasColumnName("last_name");
 
             // COLUMN: username
-            builder
-                .Entity<User>()
-                .Property(u => u.Username)
-                .HasColumnName("username")
-                .IsRequired();
+            builder.Entity<User>().Property(u => u.Username).HasColumnName("username");
             builder.Entity<User>().HasIndex(u => u.Username).IsUnique();
 
             // COLUMN: telegram_id
