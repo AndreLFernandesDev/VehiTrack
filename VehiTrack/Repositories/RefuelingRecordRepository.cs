@@ -47,5 +47,16 @@ namespace VehiTrack.Repositories
             var refuelingRecord = await _ctx.RefuelingRecords.FindAsync(id);
             return refuelingRecord;
         }
+
+        public async Task<ICollection<RefuelingRecord>> GetRefuelingRecordsByVehicleIdAsync(
+            int vehicleId
+        )
+        {
+            var refuelingRecords = await _ctx
+                .RefuelingRecords.Where(v => v.VehicleId == vehicleId)
+                .OrderBy(r => r.Date)
+                .ToListAsync();
+            return refuelingRecords;
+        }
     }
 }
