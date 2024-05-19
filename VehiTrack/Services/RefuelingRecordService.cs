@@ -118,6 +118,7 @@ namespace VehiTrack.Services
                             FuelType = refuelingRecord.FuelType,
                             VehicleId = refuelingRecord.VehicleId,
                             Vehicle = refuelingRecord.Vehicle,
+                            TotalCost = refuelingRecord.TotalCost,
                             Consumption = consumption
                         };
                     extendedRefuelingRecords.Add(refuelingRecordExtended);

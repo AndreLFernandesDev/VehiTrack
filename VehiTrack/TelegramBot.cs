@@ -3,6 +3,7 @@ using Telegram.Bot;
 using Telegram.Bot.Exceptions;
 using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.ReplyMarkups;
 using VehiTrack.Services;
 
 namespace VehiTrack
@@ -11,6 +12,7 @@ namespace VehiTrack
     {
         private readonly TelegramBotClient _client;
         private readonly UserService _userService;
+        private const int PAGE_SIZE = 10;
 
         public TelegramBot()
         {
@@ -45,24 +47,20 @@ namespace VehiTrack
             CancellationToken cancellationToken
         )
         {
-            // Only process message updates
-            if (update.Message is not { } message)
-                return;
+            var chatId = update.Message?.Chat.Id ?? update.CallbackQuery?.Message?.Chat.Id;
+            var messageFrom = update.Message?.From ?? update.CallbackQuery?.From;
+            var messageText = update.CallbackQuery?.Data?.Split("#")[0] ?? update.Message?.Text;
+            var messageArgs = update.CallbackQuery?.Data?.Split("#").Skip(1).ToList();
 
-            // Only process text messages
-            if (message.Text is not { } messageText)
-                return;
-
-            // Only process real users
-            if (message.From is null || message.From.IsBot)
+            if (chatId is null || messageFrom is null || messageText is null)
                 return;
 
             var context = new TelegramBotContext()
             {
                 BotClient = botClient,
-                Message = message,
+                ChatId = chatId ?? 0,
                 CancellationToken = cancellationToken,
-                User = await GetUserAsync(message.From)
+                User = await GetUserAsync(messageFrom)
             };
 
             switch (messageText)
@@ -89,7 +87,7 @@ namespace VehiTrack
                     await HandleAddRefuelingRecordCommandAsync(context);
                     break;
                 case "/list_refueling_records":
-                    await HandleListRefuelingRecordsCommandAsync(context);
+                    await HandleListRefuelingRecordsCommandAsync(context, messageArgs);
                     break;
                 case "/remove_refueling_record":
                     await HandleRemoveRefuelingRecordCommandAsync(context);
@@ -194,7 +192,7 @@ namespace VehiTrack
             stringBuilder.AppendLine(GetHelpMessage());
 
             await ctx.BotClient.SendTextMessageAsync(
-                chatId: ctx.Message.Chat.Id,
+                chatId: ctx.ChatId,
                 text: stringBuilder.ToString(),
                 cancellationToken: ctx.CancellationToken
             );
@@ -203,7 +201,7 @@ namespace VehiTrack
         private static async Task HandleHelpCommandAsync(TelegramBotContext ctx)
         {
             await ctx.BotClient.SendTextMessageAsync(
-                chatId: ctx.Message.Chat.Id,
+                chatId: ctx.ChatId,
                 text: GetHelpMessage(),
                 cancellationToken: ctx.CancellationToken
             );
@@ -212,7 +210,7 @@ namespace VehiTrack
         private static async Task HandleAddVehicleCommandAsync(TelegramBotContext ctx)
         {
             await ctx.BotClient.SendTextMessageAsync(
-                chatId: ctx.Message.Chat.Id,
+                chatId: ctx.ChatId,
                 text: "⚠️ Em construção...",
                 cancellationToken: ctx.CancellationToken
             );
@@ -238,7 +236,7 @@ namespace VehiTrack
             }
 
             await ctx.BotClient.SendTextMessageAsync(
-                chatId: ctx.Message.Chat.Id,
+                chatId: ctx.ChatId,
                 text: stringBuilder.ToString(),
                 cancellationToken: ctx.CancellationToken
             );
@@ -247,7 +245,7 @@ namespace VehiTrack
         private static async Task HandleRemoveVehicleCommandAsync(TelegramBotContext ctx)
         {
             await ctx.BotClient.SendTextMessageAsync(
-                chatId: ctx.Message.Chat.Id,
+                chatId: ctx.ChatId,
                 text: "⚠️ Em construção...",
                 cancellationToken: ctx.CancellationToken
             );
@@ -256,7 +254,7 @@ namespace VehiTrack
         private static async Task HandleUpdateVehicleCommandAsync(TelegramBotContext ctx)
         {
             await ctx.BotClient.SendTextMessageAsync(
-                chatId: ctx.Message.Chat.Id,
+                chatId: ctx.ChatId,
                 text: "⚠️ Em construção...",
                 cancellationToken: ctx.CancellationToken
             );
@@ -265,17 +263,103 @@ namespace VehiTrack
         private static async Task HandleAddRefuelingRecordCommandAsync(TelegramBotContext ctx)
         {
             await ctx.BotClient.SendTextMessageAsync(
-                chatId: ctx.Message.Chat.Id,
+                chatId: ctx.ChatId,
                 text: "⚠️ Em construção...",
                 cancellationToken: ctx.CancellationToken
             );
         }
 
-        private static async Task HandleListRefuelingRecordsCommandAsync(TelegramBotContext ctx)
+        private static async Task HandleListRefuelingRecordsCommandAsync(
+            TelegramBotContext ctx,
+            List<string>? args
+        )
         {
+            var stringBuilder = new StringBuilder();
+            InlineKeyboardMarkup? inlineKeyboard = null;
+
+            if (ctx.User.Vehicles.Count == 0)
+            {
+                stringBuilder.AppendLine("Nenhum veículo cadastrado.");
+            }
+            else
+            {
+                int? vehicleId = (args is not null && args.Count >= 1) ? int.Parse(args[0]) : null;
+                int page = (args is not null && args.Count >= 2) ? int.Parse(args[1]) : 1;
+
+                if (vehicleId is null)
+                {
+                    var inlineKeyboardButtons = new List<InlineKeyboardButton>();
+
+                    foreach (var vehicle in ctx.User.Vehicles.OrderBy(v => v.Name))
+                    {
+                        stringBuilder.AppendLine("Selecione o veículo");
+
+                        inlineKeyboard = new InlineKeyboardMarkup(
+                            new[]
+                            {
+                                InlineKeyboardButton.WithCallbackData(
+                                    text: vehicle.Name,
+                                    callbackData: $"/list_refueling_records#{vehicle.Id}#1"
+                                )
+                            }
+                        );
+                    }
+                }
+                else
+                {
+                    var refuelingRecordService = new RefuelingRecordService();
+
+                    var vehicle = ctx.User.Vehicles.First(v => v.Id == vehicleId);
+
+                    stringBuilder.AppendLine($"🚗 {vehicle.Name}");
+                    stringBuilder.AppendLine();
+
+                    var refuelingRecords =
+                        await refuelingRecordService.GetExtendedRefuelingRecordsByVehicleId(
+                            vehicle.Id
+                        );
+                    var refuelingRecordsCount = refuelingRecords.Count;
+
+                    refuelingRecords = refuelingRecords
+                        .OrderByDescending(r => r.Date)
+                        .Skip((page - 1) * PAGE_SIZE)
+                        .Take(PAGE_SIZE)
+                        .ToList();
+
+                    foreach (var refuelingRecord in refuelingRecords)
+                    {
+                        var date = refuelingRecord.Date.ToString("dd/MM/yyyy");
+                        var quantity = refuelingRecord.Quantity;
+                        var odometerCounter = refuelingRecord.OdometerCounter;
+                        var consumption = refuelingRecord.Consumption;
+                        var unitPrice = refuelingRecord.UnitPrice.ToString("C2");
+                        var totalCost = refuelingRecord.TotalCost.ToString("C2");
+
+                        stringBuilder.AppendLine($"📅 {date}");
+                        stringBuilder.AppendLine($"⛽ {quantity} L - {unitPrice} - {totalCost}");
+                        stringBuilder.AppendLine($"🚗 {odometerCounter} km - {consumption} km/L");
+                        stringBuilder.AppendLine();
+                    }
+
+                    if (page * PAGE_SIZE < refuelingRecordsCount)
+                    {
+                        inlineKeyboard = new InlineKeyboardMarkup(
+                            new[]
+                            {
+                                InlineKeyboardButton.WithCallbackData(
+                                    text: "Próxima página",
+                                    callbackData: $"/list_refueling_records#{vehicle.Id}#{page + 1}"
+                                )
+                            }
+                        );
+                    }
+                }
+            }
+
             await ctx.BotClient.SendTextMessageAsync(
-                chatId: ctx.Message.Chat.Id,
-                text: "⚠️ Em construção...",
+                chatId: ctx.ChatId,
+                text: stringBuilder.ToString(),
+                replyMarkup: inlineKeyboard,
                 cancellationToken: ctx.CancellationToken
             );
         }
@@ -283,7 +367,7 @@ namespace VehiTrack
         private static async Task HandleRemoveRefuelingRecordCommandAsync(TelegramBotContext ctx)
         {
             await ctx.BotClient.SendTextMessageAsync(
-                chatId: ctx.Message.Chat.Id,
+                chatId: ctx.ChatId,
                 text: "⚠️ Em construção...",
                 cancellationToken: ctx.CancellationToken
             );
@@ -292,7 +376,7 @@ namespace VehiTrack
         private static async Task HandleUpdateRefuelingRecordCommandAsync(TelegramBotContext ctx)
         {
             await ctx.BotClient.SendTextMessageAsync(
-                chatId: ctx.Message.Chat.Id,
+                chatId: ctx.ChatId,
                 text: "⚠️ Em construção...",
                 cancellationToken: ctx.CancellationToken
             );
@@ -302,7 +386,7 @@ namespace VehiTrack
     public struct TelegramBotContext
     {
         public required ITelegramBotClient BotClient { get; set; }
-        public required Message Message { get; set; }
+        public required long ChatId { get; set; }
         public required CancellationToken CancellationToken { get; set; }
         public required Models.User User { get; set; }
     }
