@@ -311,6 +311,8 @@ namespace VehiTrack
 
                     var vehicle = ctx.User.Vehicles.First(v => v.Id == vehicleId);
 
+                    stringBuilder.AppendLine($"Abastecimentos (página {page}):");
+                    stringBuilder.AppendLine();
                     stringBuilder.AppendLine($"🚗 {vehicle.Name}");
                     stringBuilder.AppendLine();
 
