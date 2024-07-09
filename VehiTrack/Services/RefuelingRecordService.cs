@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore.Query.Internal;
 using VehiTrack.Models;
 using VehiTrack.Repositories;
 
@@ -125,6 +126,52 @@ namespace VehiTrack.Services
                 }
             }
             return extendedRefuelingRecords;
+        }
+
+        public async Task GetStatisticalDataOnConsumptionAndSupplyCosts(int idVehicle)
+        {
+            var refuelingRecords =
+                await _refuelingRecordsRepository.GetRefuelingRecordsByVehicleIdAsync(idVehicle);
+            //Total quantity of supplies (by type of fuel)
+            var totalSupplies = refuelingRecords
+                .GroupBy(r => r.FuelType.Name)
+                .Select(r => new { Type = r.Key, Total = r.Count() });
+
+            //Total quantity of liters (by type of fuel)
+            var totalLiters = refuelingRecords
+                .GroupBy(r => r.FuelType.Name)
+                .Select(r => new
+                {
+                    Type = r.Key,
+                    TotalLyters = Math.Round(r.Sum(r => r.Quantity), 2)
+                });
+
+            //Average consumption (by type of fuel)
+            var refuelingRecordsExtend = await GetExtendedRefuelingRecordsByVehicleId(idVehicle);
+            var overallAverage = refuelingRecordsExtend
+                .Where(r => r.Consumption > 0)
+                .GroupBy(r => r.FuelType.Name)
+                .Select(g => new
+                {
+                    Type = g.Key,
+                    Average = Math.Round(g.Sum(r => r.Consumption) / g.Count(), 2)
+                });
+
+            //Better consumption (by type of fuel)
+            var betterConsumption = refuelingRecordsExtend
+                .GroupBy(r => r.FuelType.Name)
+                .Select(g => new { Type = g.Key, BetterConsumption = g.Max(g => g.Consumption) });
+
+            //Worst consumption (by type of fuel)
+            var worstConsumption = refuelingRecordsExtend
+                .Where(r => r.Consumption > 0)
+                .GroupBy(r => r.FuelType.Name)
+                .Select(g => new { Type = g.Key, WorstConsumption = g.Min(g => g.Consumption) });
+
+            foreach (var item in worstConsumption)
+            {
+                Console.WriteLine("Tipo {0}={1}", item.Type, item.WorstConsumption);
+            }
         }
     }
 
