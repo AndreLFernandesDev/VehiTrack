@@ -160,17 +160,39 @@ namespace VehiTrack.Services
             //Better consumption (by type of fuel)
             var betterConsumption = refuelingRecordsExtend
                 .GroupBy(r => r.FuelType.Name)
-                .Select(g => new { Type = g.Key, BetterConsumption = g.Max(g => g.Consumption) });
+                .Select(g => new { Type = g.Key, BetterConsumption = g.Max(r => r.Consumption) });
 
             //Worst consumption (by type of fuel)
             var worstConsumption = refuelingRecordsExtend
                 .Where(r => r.Consumption > 0)
                 .GroupBy(r => r.FuelType.Name)
-                .Select(g => new { Type = g.Key, WorstConsumption = g.Min(g => g.Consumption) });
+                .Select(g => new { Type = g.Key, WorstConsumption = g.Min(r => r.Consumption) });
 
-            foreach (var item in worstConsumption)
+            //Fueling costs per month (by type of fuel)
+            var fuelingCosts = refuelingRecordsExtend
+                .GroupBy(r => new
+                {
+                    r.Date.Month,
+                    r.Date.Year,
+                    r.FuelType.Name
+                })
+                .Select(g => new
+                {
+                    month = g.Key.Month,
+                    year = g.Key.Year,
+                    type = g.Key.Name,
+                    Total = Math.Round(g.Sum(r => r.TotalCost), 2)
+                });
+
+            foreach (var item in fuelingCosts)
             {
-                Console.WriteLine("Tipo {0}={1}", item.Type, item.WorstConsumption);
+                Console.WriteLine(
+                    "Mês: {0}  Ano: {1} Tipo: {2} Total={3}",
+                    item.month,
+                    item.year,
+                    item.type,
+                    item.Total
+                );
             }
         }
     }
