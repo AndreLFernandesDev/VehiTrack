@@ -48,13 +48,11 @@ namespace VehiTrack.Services
             return refuelingRecord;
         }
 
-        public async Task<List<RefuelingRecordExtended>> GetExtendedRefuelingRecordsByVehicleId(
-            int vehicleId
-        )
+        public async Task<List<IEnumerable>> GetExtendedRefuelingRecordsByVehicleId(int vehicleId)
         {
             var refuelingRecords =
                 await _refuelingRecordsRepository.GetRefuelingRecordsByVehicleIdAsync(vehicleId);
-            List<RefuelingRecordExtended> extendedRefuelingRecords = new();
+            List<IEnumerable> extendedRefuelingRecords = new();
             if (refuelingRecords.Count > 1)
             {
                 for (int i = 0; i <= refuelingRecords.Count - 1; i++)
@@ -106,7 +104,7 @@ namespace VehiTrack.Services
                         }
                     }
 
-                    RefuelingRecordExtended refuelingRecordExtended =
+                    IEnumerable refuelingRecordExtended =
                         new()
                         {
                             Id = refuelingRecord.Id,
@@ -128,17 +126,44 @@ namespace VehiTrack.Services
             return extendedRefuelingRecords;
         }
 
-        public async Task GetStatisticalDataOnConsumptionAndSupplyCosts(int idVehicle)
+        public async Task<StatisticData> GetStatisticalDataOnConsumptionAndSupplyCosts(
+            int idVehicle
+        )
         {
-            var refuelingRecords =
-                await _refuelingRecordsRepository.GetRefuelingRecordsByVehicleIdAsync(idVehicle);
+            var refuelingRecordsExtend = await GetExtendedRefuelingRecordsByVehicleId(idVehicle);
             //Total quantity of supplies (by type of fuel)
-            var totalSupplies = refuelingRecords
+            var totalSupplies = refuelingRecordsExtend
                 .GroupBy(r => r.FuelType.Name)
-                .Select(r => new { Type = r.Key, Total = r.Count() });
+                .Select(g => new { Type = g.Key, Total = g.Count() });
+
+            //Total quantity of supplies per year (by type of fuel)
+            var totalSuppliesPerYear = refuelingRecordsExtend
+                .GroupBy(r => new { r.FuelType.Name, r.Date.Year })
+                .Select(g => new
+                {
+                    Type = g.Key.Name,
+                    Year = g.Key.Year,
+                    Total = g.Count()
+                });
+
+            //Total quantity of supplies per month/year (by type of fuel)
+            var totalSuppliesPerMonthYear = refuelingRecordsExtend
+                .GroupBy(r => new
+                {
+                    r.FuelType.Name,
+                    r.Date.Month,
+                    r.Date.Year
+                })
+                .Select(g => new
+                {
+                    Type = g.Key.Name,
+                    Month = g.Key.Month,
+                    Year = g.Key.Year,
+                    Total = g.Count()
+                });
 
             //Total quantity of liters (by type of fuel)
-            var totalLiters = refuelingRecords
+            var totalLiters = refuelingRecordsExtend
                 .GroupBy(r => r.FuelType.Name)
                 .Select(r => new
                 {
@@ -146,9 +171,34 @@ namespace VehiTrack.Services
                     TotalLyters = Math.Round(r.Sum(r => r.Quantity), 2)
                 });
 
+            //Total quantity of liters per year (by type of fuel)
+            var totalLitersPerYear = refuelingRecordsExtend
+                .GroupBy(r => new { r.FuelType.Name, r.Date.Year })
+                .Select(g => new
+                {
+                    Type = g.Key.Name,
+                    Year = g.Key.Year,
+                    Total = Math.Round(g.Sum(r => r.Quantity), 2)
+                });
+
+            //Total quantity of liters per month/year (by type of fuel)
+            var totalLitersPerMonthYear = refuelingRecordsExtend
+                .GroupBy(r => new
+                {
+                    r.FuelType.Name,
+                    r.Date.Month,
+                    r.Date.Year
+                })
+                .Select(g => new
+                {
+                    Type = g.Key.Name,
+                    Month = g.Key.Month,
+                    Year = g.Key.Year,
+                    Total = Math.Round(g.Sum(r => r.Quantity), 2)
+                });
+
             //Average consumption (by type of fuel)
-            var refuelingRecordsExtend = await GetExtendedRefuelingRecordsByVehicleId(idVehicle);
-            var overallAverage = refuelingRecordsExtend
+            var averageConsumption = refuelingRecordsExtend
                 .Where(r => r.Consumption > 0)
                 .GroupBy(r => r.FuelType.Name)
                 .Select(g => new
@@ -157,10 +207,64 @@ namespace VehiTrack.Services
                     Average = Math.Round(g.Sum(r => r.Consumption) / g.Count(), 2)
                 });
 
+            //Average consumption per year (by type of fuel)
+            var averageConsumptionPerYear = refuelingRecordsExtend
+                .Where(r => r.Consumption > 0)
+                .GroupBy(r => new { r.FuelType.Name, r.Date.Year })
+                .Select(g => new
+                {
+                    Type = g.Key.Name,
+                    Year = g.Key.Year,
+                    Average = Math.Round(g.Sum(r => r.Consumption) / g.Count(), 2)
+                });
+
+            //Average consumption per month/year (by type of fuel)
+            var averageCOnsumptionPerMonthYear = refuelingRecordsExtend
+                .Where(r => r.Consumption > 0)
+                .GroupBy(r => new
+                {
+                    r.FuelType.Name,
+                    r.Date.Month,
+                    r.Date.Year
+                })
+                .Select(g => new
+                {
+                    Type = g.Key.Name,
+                    Month = g.Key.Month,
+                    Year = g.Key.Year,
+                    Average = Math.Round(g.Sum(r => r.Consumption / g.Count()), 2)
+                });
+
             //Better consumption (by type of fuel)
             var betterConsumption = refuelingRecordsExtend
                 .GroupBy(r => r.FuelType.Name)
                 .Select(g => new { Type = g.Key, BetterConsumption = g.Max(r => r.Consumption) });
+
+            //Better consumption per year (by type of fuel)
+            var betterConsumptionPerYear = refuelingRecordsExtend
+                .GroupBy(r => new { r.FuelType.Name, r.Date.Year })
+                .Select(g => new
+                {
+                    Type = g.Key.Name,
+                    Year = g.Key.Year,
+                    BetterConsumption = g.Max(r => r.Consumption)
+                });
+
+            //Better consumption per month/year (by type of fuel)
+            var betterConsumptionPerMonthYear = refuelingRecordsExtend
+                .GroupBy(r => new
+                {
+                    r.FuelType.Name,
+                    r.Date.Month,
+                    r.Date.Year
+                })
+                .Select(g => new
+                {
+                    Type = g.Key.Name,
+                    Month = g.Key.Month,
+                    Year = g.Key.Year,
+                    BetterConsumption = g.Max(r => r.Consumption)
+                });
 
             //Worst consumption (by type of fuel)
             var worstConsumption = refuelingRecordsExtend
@@ -168,8 +272,36 @@ namespace VehiTrack.Services
                 .GroupBy(r => r.FuelType.Name)
                 .Select(g => new { Type = g.Key, WorstConsumption = g.Min(r => r.Consumption) });
 
-            //Fueling costs per month (by type of fuel)
-            var fuelingCosts = refuelingRecordsExtend
+            //Worst consumption per year (by type of fuel)
+            var worstConsumptionPerYear = refuelingRecordsExtend
+                .Where(r => r.Consumption > 0)
+                .GroupBy(r => new { r.FuelType.Name, r.Date.Year })
+                .Select(g => new
+                {
+                    Type = g.Key.Name,
+                    Year = g.Key.Year,
+                    WorstConsumption = g.Min(r => r.Consumption)
+                });
+
+            //Worst consumption per month/year (by type of fuel)
+            var worstConsumptionPerMonthYear = refuelingRecordsExtend
+                .Where(r => r.Consumption > 0)
+                .GroupBy(r => new
+                {
+                    r.FuelType.Name,
+                    r.Date.Month,
+                    r.Date.Year
+                })
+                .Select(g => new
+                {
+                    Type = g.Key.Name,
+                    Month = g.Key.Month,
+                    Year = g.Key.Year,
+                    WorstConsumption = g.Min(r => r.Consumption)
+                });
+
+            //Fueling costs per month/year (by type of fuel)
+            var fuelingCostsPerMonthYear = refuelingRecordsExtend
                 .GroupBy(r => new
                 {
                     r.Date.Month,
@@ -178,27 +310,69 @@ namespace VehiTrack.Services
                 })
                 .Select(g => new
                 {
-                    month = g.Key.Month,
-                    year = g.Key.Year,
-                    type = g.Key.Name,
+                    Month = g.Key.Month,
+                    Year = g.Key.Year,
+                    Type = g.Key.Name,
                     Total = Math.Round(g.Sum(r => r.TotalCost), 2)
                 });
 
-            foreach (var item in fuelingCosts)
-            {
-                Console.WriteLine(
-                    "Mês: {0}  Ano: {1} Tipo: {2} Total={3}",
-                    item.month,
-                    item.year,
-                    item.type,
-                    item.Total
-                );
-            }
+            //Fueling costs per year (by type of fuel)
+            var fuelingCostsPerYear = refuelingRecordsExtend
+                .GroupBy(r => new { r.Date.Year, r.FuelType.Name })
+                .Select(g => new
+                {
+                    Year = g.Key.Year,
+                    Total = Math.Round(g.Sum(r => r.TotalCost), 2)
+                });
+
+            StatisticData statisticData =
+                new()
+                {
+                    TotalSupplies = totalSupplies,
+                    TotalSuppliesPerYear = totalSuppliesPerYear,
+                    TotalSuppliesPerMonthYear = totalSuppliesPerMonthYear,
+                    TotalLiters = totalLiters,
+                    TotalLitersPerYear = totalLitersPerYear,
+                    TotalLitersPerMonthYear = totalLitersPerMonthYear,
+                    AverageConsumption = averageConsumption,
+                    AverageConsumptionPerYear = averageConsumptionPerYear,
+                    AverageConsumptionPerMonthYear = averageCOnsumptionPerMonthYear,
+                    BetterConsumption = betterConsumption,
+                    BetterConsumptionPerYear = betterConsumptionPerYear,
+                    BetterConsumptionPerMonthYear = betterConsumptionPerMonthYear,
+                    WorstConsumption = worstConsumption,
+                    WorstConsumptionPerYear = worstConsumptionPerYear,
+                    WorstConsumptionPerMonthYear = worstConsumptionPerMonthYear,
+                    FuelingCostsPerMonthYear = fuelingCostsPerMonthYear,
+                    FuelingCostsPerYear = fuelingCostsPerYear
+                };
+            return statisticData;
         }
     }
 
-    public class RefuelingRecordExtended : RefuelingRecord
+    public class IEnumerable : RefuelingRecord
     {
         public double Consumption { get; set; }
+    }
+
+    public class StatisticData
+    {
+        public IEnumerable<object> TotalSupplies { get; set; } = null!;
+        public IEnumerable<object> TotalSuppliesPerYear { get; set; } = null!;
+        public IEnumerable<object> TotalSuppliesPerMonthYear { get; set; } = null!;
+        public IEnumerable<object> TotalLiters { get; set; } = null!;
+        public IEnumerable<object> TotalLitersPerYear { get; set; } = null!;
+        public IEnumerable<object> TotalLitersPerMonthYear { get; set; } = null!;
+        public IEnumerable<object> AverageConsumption { get; set; } = null!;
+        public IEnumerable<object> AverageConsumptionPerYear { get; set; } = null!;
+        public IEnumerable<object> AverageConsumptionPerMonthYear { get; set; } = null!;
+        public IEnumerable<object> BetterConsumption { get; set; } = null!;
+        public IEnumerable<object> BetterConsumptionPerYear { get; set; } = null!;
+        public IEnumerable<object> BetterConsumptionPerMonthYear { get; set; } = null!;
+        public IEnumerable<object> WorstConsumption { get; set; } = null!;
+        public IEnumerable<object> WorstConsumptionPerYear { get; set; } = null!;
+        public IEnumerable<object> WorstConsumptionPerMonthYear { get; set; } = null!;
+        public IEnumerable<object> FuelingCostsPerMonthYear { get; set; } = null!;
+        public IEnumerable<object> FuelingCostsPerYear { get; set; } = null!;
     }
 }
