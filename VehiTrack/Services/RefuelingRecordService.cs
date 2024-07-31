@@ -1,5 +1,3 @@
-using System.Security.Principal;
-using Microsoft.EntityFrameworkCore.Query.Internal;
 using VehiTrack.Models;
 using VehiTrack.Repositories;
 
